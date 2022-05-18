@@ -8,7 +8,7 @@ import { Profile  } from './Profile.jsx';
 
 const alchemyId = process.env.ALCHEMY_ID
 
-const chains = [chain.mainnet, chain.ropsten, chain.polygon]
+const chains = [chain.mainnet, chain.ropsten, chain.polygon, chain.polygonMumbai, chain.arbitrum]
 const defaultChain = chain.mainnet
 
 // Set up connectors

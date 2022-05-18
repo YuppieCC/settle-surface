@@ -4,9 +4,18 @@ import {
     useDisconnect,
     useEnsAvatar,
     useEnsName,
+    useNetwork
 } from 'wagmi'
 
 export function Profile() {
+    const {
+        activeChain,
+        chains,
+        _error,
+        isLoading,
+        pendingChainId,
+        switchNetwork,
+      } = useNetwork()
     const { data: account } = useAccount()
     const { data: ensAvatar } = useEnsAvatar({ addressOrName: account?.address })
     const { data: ensName } = useEnsName({ address: account?.address })
@@ -17,7 +26,16 @@ export function Profile() {
     if (account) {
         return (
             <div>
-                <img src={ensAvatar} alt="ENS Avatar"/>
+                {chains.map((connector) => (
+                    <button
+                        disabled={!switchNetwork || connector.id === activeChain?.id}
+                        key={connector.id}
+                        onClick={() => switchNetwork?.(connector.id)}
+                        >
+                        {connector.name}
+                        {isLoading && pendingChainId === connector.id && ' (switching)'}
+                    </button>
+                ))}
                 <div>
                     {ensName ? `${ensName} (${account.address})` : account.address}
                 </div>
@@ -29,6 +47,7 @@ export function Profile() {
 
     return (
         <div>
+            {activeChain && <div>Connected to {activeChain.name}</div>}
             {connectors.map((connector) => (
                 <button
                     disabled={!connector.ready}
