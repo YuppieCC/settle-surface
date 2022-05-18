@@ -21,7 +21,7 @@ export function Profile() {
                 <div>
                     {ensName ? `${ensName} (${account.address})` : account.address}
                 </div>
-                <div>Connected to {account.connector.name}</div>
+                {/* <div>Connected to {account.connector.name}</div> */}
                 <button onClick={disconnect}>Disconnect</button>
             </div>
         )
