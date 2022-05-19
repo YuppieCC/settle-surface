@@ -4,8 +4,25 @@ import {
     useDisconnect,
     useEnsAvatar,
     useEnsName,
-    useNetwork
+    useNetwork,
+    useBalance
 } from 'wagmi'
+
+function GetUseBalance(addressOrName, chainId) {
+    console.log("chainId:", chainId);
+    const { data, isError, isLoading } = useBalance({
+        addressOrName: addressOrName,
+        chainId: chainId,
+    })
+    console.log(data)
+    if (isLoading) return <div>Fetching balance…</div>
+    if (isError) return <div>Error fetching balance</div>
+    return (
+        <div>
+            Balance: {data?.formatted} {data?.symbol}
+        </div>
+    )
+}
 
 export function Profile() {
     const {
@@ -15,8 +32,10 @@ export function Profile() {
         isLoading,
         pendingChainId,
         switchNetwork,
-      } = useNetwork()
+      } = useNetwork()  
+    
     const { data: account } = useAccount()
+    // console.log(account.address);
     const { data: ensAvatar } = useEnsAvatar({ addressOrName: account?.address })
     const { data: ensName } = useEnsName({ address: account?.address })
     const { connect, connectors, error, isConnecting, pendingConnector } = 
@@ -39,6 +58,7 @@ export function Profile() {
                 <div>
                     {ensName ? `${ensName} (${account.address})` : account.address}
                 </div>
+                {GetUseBalance(account.address, activeChain?.id)}
                 {/* <div>Connected to {account.connector.name}</div> */}
                 <button onClick={disconnect}>Disconnect</button>
             </div>
