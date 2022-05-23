@@ -13,6 +13,7 @@ function GetUseBalance(addressOrName, chainId) {
     const { data, isError, isLoading } = useBalance({
         addressOrName: addressOrName,
         chainId: chainId,
+        wathch: true,
     })
     console.log(data)
     if (isLoading) return <div>Fetching balance…</div>
@@ -56,6 +57,7 @@ export function Profile() {
                     </button>
                 ))}
                 <div>
+                    {activeChain && <div>Connected to {activeChain.name}</div>}
                     {ensName ? `${ensName} (${account.address})` : account.address}
                 </div>
                 {GetUseBalance(account.address, activeChain?.id)}
