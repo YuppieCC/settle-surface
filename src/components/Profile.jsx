@@ -5,8 +5,11 @@ import {
     useEnsAvatar,
     useEnsName,
     useNetwork,
-    useBalance
+    useBalance,
+    useSignMessage
 } from 'wagmi'
+
+import { verifyMessage } from 'ethers/lib/utils'
 
 function GetUseBalance(addressOrName, chainId) {
     console.log("chainId:", chainId);

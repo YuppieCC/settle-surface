@@ -7,7 +7,7 @@ import {WalletConnectConnector } from 'wagmi/connectors/walletConnect'
 import { Profile  } from './Profile.jsx';
 
 const alchemyId = process.env.ALCHEMY_ID
-
+console.log("alchemyId:", alchemyId);
 const chains = [chain.mainnet, chain.ropsten, chain.polygon, chain.polygonMumbai, chain.arbitrum]
 const defaultChain = chain.mainnet
 
