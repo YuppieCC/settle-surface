@@ -1,55 +1,63 @@
-import { Provider, chain, createClient } from 'wagmi'
+import { providers } from 'ethers'
+
+import { WagmiConfig, createClient, defaultChains, configureChains, chain } from 'wagmi'
+
+import { alchemyProvider } from 'wagmi/providers/alchemy'
+import { publicProvider } from 'wagmi/providers/public'
+
 import { CoinbaseWalletConnector } from 'wagmi/connectors/coinbaseWallet'
 import { InjectedConnector } from 'wagmi/connectors/injected'
 import { MetaMaskConnector } from 'wagmi/connectors/metaMask'
-import {WalletConnectConnector } from 'wagmi/connectors/walletConnect'
+import { WalletConnectConnector } from 'wagmi/connectors/walletConnect'
+import { Profile } from './Profile.jsx';
 
-import { Profile  } from './Profile.jsx';
+const alchemyId = process.env.REACT_APP_ALCHEMY_ID
+console.log("alchemyId", alchemyId) 
 
-const alchemyId = process.env.ALCHEMY_ID
-console.log("alchemyId:", alchemyId);
-const chains = [chain.mainnet, chain.ropsten, chain.polygon, chain.polygonMumbai, chain.arbitrum]
-const defaultChain = chain.mainnet
+// Configure chains & providers with the Alchemy provider.
+// Two popular providers are Alchemy (alchemy.com) and Infura (infura.io)
+const { chains, provider, webSocketProvider } = configureChains(defaultChains, [
+  alchemyProvider({ alchemyId }),
+  publicProvider(),
+])
 
-// Set up connectors
+chains.push(chain.polygon);
+// Set up client
 const client = createClient({
-    autoConnect: true,
-    connectors({ chainId }) {
-        const chain = chains.find((x) => x.id === chainId) ?? defaultChain
-        const rpcUrl = chain.rpcUrls.alchemy 
-            ? `${chain.rpcUrls.alchemy}/${alchemyId}` 
-            : chain.rpcUrls.mainnet
-        return [
-            new MetaMaskConnector({ chains }),
-            new CoinbaseWalletConnector({ 
-                chains,
-                options: {
-                    appName: 'wagmi',
-                    chainId: chain.id,
-                    jsonRpcUrl: rpcUrl,
-                }
-            }),
-            new WalletConnectConnector({
-                chains,
-                options: {
-                    qrcode: true,
-                    rpc: { [chain.id]: rpcUrl },
-                }
-            }),
-            new InjectedConnector({ 
-                chains,
-                options: { name: 'Injected' },
-             }),
-        ]
-    }
+  autoConnect: true,
+  connectors: [
+    new MetaMaskConnector({ chains }),
+    new CoinbaseWalletConnector({
+      chains,
+      options: {
+        appName: 'wagmi',
+      },
+    }),
+    new WalletConnectConnector({
+      chains,
+      options: {
+        qrcode: true,
+      },
+    }),
+    new InjectedConnector({
+      chains,
+      options: {
+        name: 'Injected',
+        shimDisconnect: true,
+      },
+    }),
+  ],
+  provider(config) {
+    return new providers.AlchemyProvider(config.chainId, alchemyId)
+  },
+  webSocketProvider,
 })
 
-function App() {
-    return (
-        <Provider client={client}>
-            <Profile />
-        </Provider>
-    )
+// Pass client to React Context Provider
+export default function App() {
+  return (
+    <WagmiConfig client={client}>
+      <Profile />
+    </WagmiConfig>
+  )
 }
-
-export default App;

@@ -12,13 +12,12 @@ import {
 import { verifyMessage } from 'ethers/lib/utils'
 
 function GetUseBalance(addressOrName, chainId) {
-    console.log("chainId:", chainId);
     const { data, isError, isLoading } = useBalance({
         addressOrName: addressOrName,
         chainId: chainId,
         wathch: true,
+        enabled: true,
     })
-    console.log(data)
     if (isLoading) return <div>Fetching balance…</div>
     if (isError) return <div>Error fetching balance</div>
     return (
@@ -39,7 +38,6 @@ export function Profile() {
       } = useNetwork()  
     
     const { data: account } = useAccount()
-    // console.log(account.address);
     const { data: ensAvatar } = useEnsAvatar({ addressOrName: account?.address })
     const { data: ensName } = useEnsName({ address: account?.address })
     const { connect, connectors, error, isConnecting, pendingConnector } = 
